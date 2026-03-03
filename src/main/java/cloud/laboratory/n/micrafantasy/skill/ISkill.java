@@ -11,7 +11,7 @@ public interface ISkill {
     default int getCastTimeTicks() { return 0; }
     /** このスキルを使用するために必要なジョブレベル。 */
     default int getUnlockLevel() { return 1; }
-git     /**
+     /**
      * スキル使用前の追加条件チェック。
      * 失敗時はプレイヤーにメッセージを表示して false を返す。
      * デフォルトは常に true。
