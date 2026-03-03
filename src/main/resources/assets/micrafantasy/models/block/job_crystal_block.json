@@ -1,0 +1,6 @@
+﻿{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "micrafantasy:block/job_crystal_block"
+  }
+}
