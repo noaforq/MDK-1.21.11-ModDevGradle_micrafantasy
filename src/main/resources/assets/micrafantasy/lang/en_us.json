@@ -19,7 +19,7 @@
   "message.micrafantasy.cast_cancelled": "Casting cancelled",
   "message.micrafantasy.skill_locked": "%s requires Lv.%s to unlock",
   "key.categories.micrafantasy": "Micrafantasy",
-  "key.micrafantasy.skill_0": "Skill 0 (Unused)",
+  "key.micrafantasy.skill_0": "Skill 0 (Normal Attack)",
   "key.micrafantasy.skill_1": "Skill 1 (Provoke)",
   "key.micrafantasy.skill_2": "Skill 2 (Shield Bash)",
   "key.micrafantasy.skill_3": "Skill 3 (Clemency)",
@@ -29,12 +29,13 @@
   "key.micrafantasy.skill_7": "Skill 7 (Sentinel)",
   "key.micrafantasy.skill_8": "Skill 8 (Invincible)",
   "key.micrafantasy.skill_9": "Skill 9 (Last Bastion)",
+  "key.micrafantasy.skill_dot": "Skill . (Normal Defense)",
   "key.micrafantasy.camera_zoom_in":  "Camera: Zoom In (Hold)",
   "key.micrafantasy.camera_zoom_out": "Camera: Zoom Out (Hold)",
   "key.micrafantasy.camera_view":     "Camera: Toggle View",
   "key.micrafantasy.camera_reset":    "Camera: Reset Zoom",
-  "key.micrafantasy.camera_up":    "Camera: Look Up",
-  "key.micrafantasy.camera_down":  "Camera: Look Down",
-  "key.micrafantasy.camera_left":  "Camera: Look Left",
-  "key.micrafantasy.camera_right": "Camera: Look Right"
+  "key.micrafantasy.camera_up":    "Camera: Look Up (↓Key)",
+  "key.micrafantasy.camera_down":  "Camera: Look Down (↑Key)",
+  "key.micrafantasy.camera_left":  "Camera: Look Left (E)",
+  "key.micrafantasy.camera_right": "Camera: Look Right (Q)"
 }

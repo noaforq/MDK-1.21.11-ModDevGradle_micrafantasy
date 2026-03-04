@@ -1,5 +1,6 @@
 package cloud.laboratory.n.micrafantasy.skill.paladin;
 
+import cloud.laboratory.n.micrafantasy.network.ModNetwork;
 import cloud.laboratory.n.micrafantasy.skill.EffectHelper;
 import cloud.laboratory.n.micrafantasy.skill.ISkill;
 import cloud.laboratory.n.micrafantasy.skill.SkillHelper;
@@ -58,13 +59,22 @@ public class ShieldBashSkill implements ISkill {
     }
 
     @Override
+    public boolean canUseClient(net.minecraft.world.entity.player.Player player) {
+        return player.getItemInHand(InteractionHand.MAIN_HAND).getItem() instanceof ShieldItem ||
+               player.getItemInHand(InteractionHand.OFF_HAND).getItem()  instanceof ShieldItem;
+    }
+
+    /** 盾はオフハンド優先でswing（クライアント側で実行される） */
+    @Override
+    public net.minecraft.world.InteractionHand swingHand() {
+        return net.minecraft.world.InteractionHand.OFF_HAND;
+    }
+
+    @Override
     public void execute(ServerPlayer player) {
         ServerLevel level = (ServerLevel) player.level();
         double x = player.getX(), y = player.getY(), z = player.getZ();
 
-        // 盾振りモーション（オフハンド優先、なければメインハンド）
-        boolean shieldInOff = player.getItemInHand(InteractionHand.OFF_HAND).getItem() instanceof ShieldItem;
-        player.swing(shieldInOff ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND);
 
         AABB area = player.getBoundingBox().inflate(RANGE);
         List<LivingEntity> targets = level.getEntitiesOfClass(LivingEntity.class, area,
@@ -74,7 +84,8 @@ public class ShieldBashSkill implements ISkill {
             // 敵対心アップ
             if (target instanceof Mob mob) mob.setTarget(player);
             // ダメージ
-            target.hurtServer(level, player.damageSources().playerAttack(player), DAMAGE);
+            boolean hit = target.hurtServer(level, player.damageSources().playerAttack(player), DAMAGE);
+            if (hit) ModNetwork.sendDamage(player, DAMAGE, false);
             // スタン時間：盾の現在耐久値 / 10 tick（最小1秒、上限 Slowness Lv127 × 20tick）
             int shieldDur = SkillHelper.getShieldDurability(player);
             if (127 < shieldDur) {

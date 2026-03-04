@@ -82,9 +82,12 @@ public class DebugEventHandler {
         if (data.getJobType() != JobType.NONE) {
             data.setLevel(targetLevel);
             data.setExperience(0);
-            // レベルに応じた最大ST/MP を再計算
-            data.setMaxStamina(100f + (targetLevel - 1) * 20f);
-            data.setMaxMana(100f + (targetLevel - 1) * 20f);
+            data.setTotalExperience(0);
+            // experienceToNextLevel を targetLevel に合わせて再計算
+            // 式: (level * 10) ^ 2
+            int n = targetLevel * 10;
+            data.setExperienceToNextLevel(n * n);
+            // ST/MPはジョブレベル非依存（固定100f）
             data.setStamina(data.getMaxStamina());
             data.setMana(data.getMaxMana());
             ModNetwork.sendToPlayer(player, new SyncJobDataPayload(data));

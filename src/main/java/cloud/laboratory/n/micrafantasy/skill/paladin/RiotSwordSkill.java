@@ -1,5 +1,6 @@
 package cloud.laboratory.n.micrafantasy.skill.paladin;
 
+import cloud.laboratory.n.micrafantasy.network.ModNetwork;
 import cloud.laboratory.n.micrafantasy.skill.EffectHelper;
 import cloud.laboratory.n.micrafantasy.skill.ISkill;
 import cloud.laboratory.n.micrafantasy.skill.SkillHelper;
@@ -27,7 +28,7 @@ public class RiotSwordSkill implements ISkill {
     private static final float MANA_COST       = 0f;
     private static final int   COOLDOWN_TICKS  = 2 * 20;  // 2秒
     private static final int   CAST_TIME_TICKS = 0;
-    private static final int   UNLOCK_LEVEL    = 15;
+    private static final int   UNLOCK_LEVEL    = 10;
     private static final float DAMAGE_MULTIPLIER = 2.0f;  // 武器攻撃力 × 2.0
     private static final float RANGE           = 6f;
 
@@ -53,15 +54,19 @@ public class RiotSwordSkill implements ISkill {
         // 攻撃力アップ（Strength Lv2、8秒）
         EffectHelper.applyBuff(player, new MobEffectInstance(MobEffects.STRENGTH, 8 * 20, 1));
 
-        // 武器攻撃力 × 2.0
-        float damage = SkillHelper.getWeaponDamage(player) * DAMAGE_MULTIPLIER;
+        // (キャラクター攻撃力 + 武器攻撃力) × 2.0
+        float damage = (SkillHelper.getPlayerBaseAttackDamage(player)
+                + SkillHelper.getWeaponAttackDamage(player)) * DAMAGE_MULTIPLIER;
 
         // 範囲攻撃
-        for (LivingEntity target : targets) {
-            // 武器振りモーション
-            player.swing(InteractionHand.MAIN_HAND);
-            level.playSound(null, x, y, z, SoundEvents.PLAYER_ATTACK_STRONG, SoundSource.PLAYERS, 1.0f, 0.9f);
-            target.hurtServer(level, player.damageSources().playerAttack(player), damage);
+        if (targets.isEmpty()) {
+            SkillHelper.hitBlockInSight(player, RANGE);
+        } else {
+            for (LivingEntity target : targets) {
+                level.playSound(null, x, y, z, SoundEvents.PLAYER_ATTACK_STRONG, SoundSource.PLAYERS, 1.0f, 0.9f);
+                boolean hit = target.hurtServer(level, player.damageSources().playerAttack(player), damage);
+                if (hit) ModNetwork.sendDamage(player, damage, false);
+            }
         }
     }
 }

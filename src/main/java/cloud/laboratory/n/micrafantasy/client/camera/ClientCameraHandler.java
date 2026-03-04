@@ -17,14 +17,14 @@ import net.neoforged.neoforge.client.event.ViewportEvent;
  * カメラ操作ハンドラ（クライアント専用）
  *
  * キーバインド（デフォルト）：
- *   テンキー+  : ズームイン（長押し、離すと戻る）
- *   テンキー-  : ズームアウト（長押し、離すと戻る）
+ *   テンキー+  : ズームイン（長押しで段階的に変化・離しても維持）
+ *   テンキー-  : ズームアウト（長押しで段階的に変化・離しても維持）
  *   テンキー*  : 視点切替（1人称 → 3人称後方 → 3人称前方 → 1人称）
- *   テンキー/  : ズームリセット
- *   矢印上     : カメラ上（ピッチ）
- *   矢印下     : カメラ下（ピッチ）
- *   矢印左     : カメラ左（ヨー）
- *   矢印右     : カメラ右（ヨー）
+ *   テンキー/  : ズームリセット（FOV=1.0に戻す）
+ *   ↓キー     : カメラ上（ピッチ）
+ *   ↑キー     : カメラ下（ピッチ）
+ *   Eキー      : カメラ左（ヨー）
+ *   Qキー      : カメラ右（ヨー）
  */
 @EventBusSubscriber(modid = MicrafantasyMod.MODID, value = Dist.CLIENT)
 public class ClientCameraHandler {
@@ -55,14 +55,13 @@ public class ClientCameraHandler {
         // GUI表示中は操作しない
         if (mc.screen != null) return;
 
-        // ---- ズームイン/アウト（長押し）----
+        // ---- ズームイン/アウト（長押し：段階的に変化・離しても維持）----
         if (ModKeyBindings.CAMERA_ZOOM_IN.isDown()) {
             targetFovMultiplier = Math.max(FOV_MIN, targetFovMultiplier - ZOOM_STEP);
         } else if (ModKeyBindings.CAMERA_ZOOM_OUT.isDown()) {
             targetFovMultiplier = Math.min(FOV_MAX, targetFovMultiplier + ZOOM_STEP);
-        } else {
-            targetFovMultiplier = 1.0f;
         }
+        // キーを離しても targetFovMultiplier はそのまま維持（元に戻さない）
         currentFovMultiplier += (targetFovMultiplier - currentFovMultiplier) * LERP_SPEED;
 
         // ---- 視点切替（1回押し）----

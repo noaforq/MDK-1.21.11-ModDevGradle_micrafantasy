@@ -1,5 +1,6 @@
 package cloud.laboratory.n.micrafantasy.skill.paladin;
 
+import cloud.laboratory.n.micrafantasy.network.ModNetwork;
 import cloud.laboratory.n.micrafantasy.skill.EffectHelper;
 import cloud.laboratory.n.micrafantasy.skill.ISkill;
 import cloud.laboratory.n.micrafantasy.skill.SkillHelper;
@@ -27,7 +28,7 @@ public class FastBladeSkill implements ISkill {
     private static final float MANA_COST       = 0f;
     private static final int   COOLDOWN_TICKS  = 1 * 20;  // 1秒
     private static final int   CAST_TIME_TICKS = 0;
-    private static final int   UNLOCK_LEVEL    = 1;
+    private static final int   UNLOCK_LEVEL    = 5;
     private static final float DAMAGE_MULTIPLIER = 1.5f;  // 武器攻撃力 × 1.5
     private static final float RANGE           = 4f;
 
@@ -52,15 +53,20 @@ public class FastBladeSkill implements ISkill {
         // 攻撃速度アップ（Haste Lv2、5秒）
         EffectHelper.applyBuff(player, new MobEffectInstance(MobEffects.HASTE, 5 * 20, 1));
 
-        // 武器攻撃力 × 1.5
-        float damage = SkillHelper.getWeaponDamage(player) * DAMAGE_MULTIPLIER;
+        // (キャラクター攻撃力 + 武器攻撃力) × 1.5
+        float damage = (SkillHelper.getPlayerBaseAttackDamage(player)
+                + SkillHelper.getWeaponAttackDamage(player)) * DAMAGE_MULTIPLIER;
 
         // 範囲小攻撃
-        for (LivingEntity target : targets) {
-            // 武器振りモーション
-            player.swing(InteractionHand.MAIN_HAND);
-            level.playSound(null, x, y, z, SoundEvents.PLAYER_ATTACK_SWEEP, SoundSource.PLAYERS, 1.0f, 1.2f);
-            target.hurtServer(level, player.damageSources().playerAttack(player), damage);
+        if (targets.isEmpty()) {
+            // Mob がいない → 視線方向のブロックを攻撃
+            SkillHelper.hitBlockInSight(player, RANGE);
+        } else {
+            for (LivingEntity target : targets) {
+                level.playSound(null, x, y, z, SoundEvents.PLAYER_ATTACK_SWEEP, SoundSource.PLAYERS, 1.0f, 1.2f);
+                boolean hit = target.hurtServer(level, player.damageSources().playerAttack(player), damage);
+                if (hit) ModNetwork.sendDamage(player, damage, false);
+            }
         }
     }
 
