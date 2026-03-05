@@ -90,11 +90,17 @@ public class JobHudRenderer {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || mc.options.hideGui) return;
         JobData data = mc.player.getData(ModAttachmentTypes.JOB_DATA.get());
-        if (data.getJobType() == JobType.NONE) return;
 
         GuiGraphics g = event.getGuiGraphics();
         int sw = mc.getWindow().getGuiScaledWidth();
         int sh = mc.getWindow().getGuiScaledHeight();
+
+        // 座標表示・時刻表示はジョブに依存しない（常に表示）
+        renderCoordinates(g, mc, sw, sh);
+        renderGameTime(g, mc, sw, sh);
+
+        // ジョブなしの場合はここで終了
+        if (data.getJobType() == JobType.NONE) return;
 
         // スキルスロット（画面上部中央）
         int slotX = (sw - TOTAL_WIDTH) / 2;
@@ -303,6 +309,96 @@ public class JobHudRenderer {
         String timeStr = String.format("%.1fs", remaining / 20f);
         float tw = mc.font.width(timeStr) * FONT_SCALE_SMALL;
         drawStringScaled(g, mc, timeStr, cx + CAST_BAR_W - tw, cy + CAST_BAR_H + 1, FONT_SCALE_SMALL, 0xFFCCCCFF, false);
+    }
+
+    // ================================================================
+    // ゲーム内時刻表示（画面右下・座標の上）
+    // ================================================================
+    private static void renderGameTime(GuiGraphics g, Minecraft mc, int sw, int sh) {
+        if (mc.player == null || mc.level == null) return;
+
+        // Minecraftの1日 = 24000 tick
+        // dayTime 0     = 06:00 (夜明け)
+        // dayTime 6000  = 12:00 (正午)
+        // dayTime 12000 = 18:00 (夕暮れ)
+        // dayTime 18000 = 00:00 (深夜)
+        long dayTime = mc.level.getDayTime() % 24000L;
+        // tick を分に換算 (24000tick = 24*60min)
+        int totalMinutes = (int)((dayTime * 1440L) / 24000L); // 0〜1439
+        int hour   = (totalMinutes / 60 + 6) % 24;  // 0tick=6時
+        int minute = totalMinutes % 60;
+
+        // 昼夜アイコン文字
+        boolean isDay = hour >= 6 && hour < 18;
+        String icon    = isDay ? "☀" : "☽";
+        int    iconCol = isDay ? 0xFFFFDD44 : 0xFFAABBFF;
+
+        String timeStr = String.format("%02d:%02d", hour, minute);
+
+        float scale  = FONT_SCALE_SMALL;
+        float iconW  = mc.font.width(icon)    * scale;
+        float timeW  = mc.font.width(timeStr) * scale;
+        float textH  = mc.font.lineHeight * scale;
+        int margin   = 4;
+        int padX     = 3;
+        int padY     = 2;
+        float gap    = 2f; // アイコンと時刻の間隔
+
+        float totalW = iconW + gap + timeW;
+
+        // 座標表示(1行)の高さ + パディング + マージン を考慮して座標行の上に配置
+        float coordRowH = textH + padY * 2 + margin;
+        float bgX = sw - totalW - margin - padX * 2;
+        float bgY = sh - coordRowH - textH - padY * 2 - 2; // 座標の上に2px空けて配置
+
+        // 半透明背景
+        g.fill((int) bgX, (int) bgY,
+               (int)(bgX + totalW + padX * 2), (int)(bgY + textH + padY * 2),
+               0xAA000000);
+
+        // アイコン描画
+        drawStringScaled(g, mc, icon,
+                bgX + padX, bgY + padY,
+                scale, iconCol, false);
+
+        // 時刻描画
+        drawStringScaled(g, mc, timeStr,
+                bgX + padX + iconW + gap, bgY + padY,
+                scale, 0xFFFFFFFF, false);
+    }
+
+    // ================================================================
+    // 座標表示（画面右下）
+    // ================================================================
+    private static void renderCoordinates(GuiGraphics g, Minecraft mc, int sw, int sh) {
+        if (mc.player == null) return;
+
+        int bx = (int) Math.floor(mc.player.getX());
+        int by = (int) Math.floor(mc.player.getY());
+        int bz = (int) Math.floor(mc.player.getZ());
+
+        String coordStr = String.format("XYZ: %d / %d / %d", bx, by, bz);
+
+        // 背景幅をテキスト幅に合わせる
+        float scale   = FONT_SCALE_SMALL;
+        float textW   = mc.font.width(coordStr) * scale;
+        float textH   = mc.font.lineHeight * scale;
+        int margin    = 4;
+        int padX      = 3;
+        int padY      = 2;
+
+        float bgX = sw - textW - margin - padX * 2;
+        float bgY = sh - textH - margin - padY * 2;
+
+        // 半透明背景
+        g.fill((int) bgX, (int) bgY,
+               (int)(bgX + textW + padX * 2), (int)(bgY + textH + padY * 2),
+               0xAA000000);
+
+        // テキスト
+        drawStringScaled(g, mc, coordStr,
+                bgX + padX, bgY + padY,
+                scale, 0xFFDDDDDD, false);
     }
 
     // ================================================================

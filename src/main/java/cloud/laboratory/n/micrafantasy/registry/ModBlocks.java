@@ -19,6 +19,6 @@ public class ModBlocks {
                             .mapColor(MapColor.COLOR_BLUE)
                             .strength(3.0f, 6.0f)
                             .sound(SoundType.AMETHYST)
-                            .lightLevel(state -> 7)
+                            .lightLevel(state -> 15)
             );
 }
