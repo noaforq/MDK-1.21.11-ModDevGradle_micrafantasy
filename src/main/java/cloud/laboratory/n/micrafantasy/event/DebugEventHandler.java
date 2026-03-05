@@ -72,8 +72,7 @@ public class DebugEventHandler {
 
         // ── 1. 全ジョブストーン配布（未所持の場合のみ） ──
         giveItemIfNotHeld(player, new ItemStack(ModItems.PALADIN_JOB_STONE.get()));
-        // 今後ジョブが追加されたらここに追記
-        // giveItemIfNotHeld(player, new ItemStack(ModItems.WARRIOR_JOB_STONE.get()));
+        giveItemIfNotHeld(player, new ItemStack(ModItems.WHITE_MAGE_JOB_STONE.get()));
 
         // ── 2 & 3. 全ジョブのレベルをセット、EXPを0にリセット ──
         // 現在装備中のジョブのデータを更新する

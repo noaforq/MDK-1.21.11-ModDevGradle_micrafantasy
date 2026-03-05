@@ -2,7 +2,8 @@ package cloud.laboratory.n.micrafantasy.job;
 
 public enum JobType {
     NONE("none", 0),
-    PALADIN("paladin", 1);
+    PALADIN("paladin", 1),
+    WHITE_MAGE("white_mage", 2);
 
     private final String id;
     private final int numericId;
