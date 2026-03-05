@@ -51,6 +51,8 @@ public class CrystalReplaceHandler {
     @SubscribeEvent
     public static void onChunkLoad(ChunkEvent.Load event) {
         if (!MicrafantasyConfig.isCrystalReplaceEnabled()) return;
+        // 新規生成チャンクのみ対象（サーバー起動時の既存チャンク再ロードはスキップ）
+        if (!event.isNewChunk()) return;
         LevelAccessor level = event.getLevel();
         if (level.isClientSide()) return;
         if (!(event.getChunk() instanceof LevelChunk chunk)) return;
@@ -60,8 +62,8 @@ public class CrystalReplaceHandler {
     }
 
     /**
-     * 指定チャンク内のブロックをクリスタルに置換する。
-     * ChunkEvent.Load および DebugEventHandler から呼ばれる。
+     * 指定チャンク内の石系ブロックをランダムでクリスタルに置換する。
+     * 新規生成チャンクに対してのみ呼ばれる（ChunkEvent.Load の isNewChunk() == true 時）。
      */
     public static void replaceInChunk(ServerLevel level, LevelChunk chunk) {
         if (!MicrafantasyConfig.isCrystalReplaceEnabled()) return;
@@ -74,27 +76,8 @@ public class CrystalReplaceHandler {
 
         RandomSource rng = level.getRandom();
         BlockState crystalState = ModBlocks.JOB_CRYSTAL_BLOCK.get().defaultBlockState();
-        BlockState stoneState   = Blocks.STONE.defaultBlockState();
 
-        // ── フェーズ1：既存クリスタルブロックをすべて石に戻す ──
-        int reverted = 0;
-        for (BlockPos pos : BlockPos.betweenClosed(
-                chunkPos.getMinBlockX(), minY, chunkPos.getMinBlockZ(),
-                chunkPos.getMaxBlockX(), maxY, chunkPos.getMaxBlockZ()
-        )) {
-            if (chunk.getBlockState(pos).is(ModBlocks.JOB_CRYSTAL_BLOCK.get())) {
-                chunk.setBlockState(pos.immutable(), stoneState, 11);
-                reverted++;
-            }
-        }
-        if (reverted > 0) {
-            chunk.markUnsaved();
-            MicrafantasyMod.LOGGER.info(
-                    "[CrystalReplace] チャンク ({}, {}) で {} 個のクリスタルを石に戻しました",
-                    chunkPos.x, chunkPos.z, reverted);
-        }
-
-        // ── フェーズ2：石系ブロックをランダムでクリスタルに置換 ──
+        // 石系ブロックをランダムでクリスタルに置換
         int replaced = 0;
         BlockPos firstPos = null;
         for (BlockPos pos : BlockPos.betweenClosed(
