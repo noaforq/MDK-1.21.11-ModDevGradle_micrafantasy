@@ -10,10 +10,19 @@ import net.minecraft.server.level.ServerPlayer;
 import java.util.HashMap;
 import java.util.Map;
 public class SkillRegistry {
+
+    /** ジョブ共通スキル（0: 通常攻撃、10: 通常防御）*/
+    private static final Map<Integer, ISkill> COMMON_SKILLS = new HashMap<>();
+
     private static final Map<JobType, Map<Integer, ISkill>> JOB_SKILLS = new HashMap<>();
+
     static {
+        // ── 共通スキル（ジョブ不問） ──
+        COMMON_SKILLS.put(0,  new NormalAttackSkill());  // 通常攻撃
+        COMMON_SKILLS.put(10, new NormalDefenseSkill()); // 通常防御
+
+        // ── ナイト固有スキル ──
         Map<Integer, ISkill> paladinSkills = new HashMap<>();
-        // スロット0は空き（通常攻撃廃止）
         paladinSkills.put(1, new ProvokeSkill());        // 挑発
         paladinSkills.put(2, new ShieldBashSkill());     // シールド・バッシュ
         paladinSkills.put(3, new ClemencySkill());       // クレメンシー
@@ -28,21 +37,27 @@ public class SkillRegistry {
 
     /**
      * キー入力時に呼ばれる。
-     * 詠唱時間 > 0 のスキルは詠唱を開始し、0 のスキルは即時発動する。
+     * スキル0・10は共通スキルとしてジョブ不問で発動する。
      */
     public static void executeSkill(ServerPlayer player, int skillId) {
         JobData data = player.getData(ModAttachmentTypes.JOB_DATA.get());
         JobType jobType = data.getJobType();
-        if (jobType == JobType.NONE) {
-            player.displayClientMessage(Component.translatable("message.micrafantasy.no_job"), true);
-            return;
-        }
-        Map<Integer, ISkill> skills = JOB_SKILLS.get(jobType);
-        if (skills == null) return;
-        ISkill skill = skills.get(skillId);
-        if (skill == null) return;
 
-        // アンロックレベルチェック
+        // 共通スキル（0: 通常攻撃、10: 通常防御）はジョブ不問で発動
+        ISkill skill = COMMON_SKILLS.get(skillId);
+        if (skill == null) {
+            // ジョブ固有スキル
+            if (jobType == JobType.NONE) {
+                player.displayClientMessage(Component.translatable("message.micrafantasy.no_job"), true);
+                return;
+            }
+            Map<Integer, ISkill> skills = JOB_SKILLS.get(jobType);
+            if (skills == null) return;
+            skill = skills.get(skillId);
+            if (skill == null) return;
+        }
+
+        // アンロックレベルチェック（共通スキルはLv1固定なので実質スキップ）
         if (data.getLevel() < skill.getUnlockLevel()) {
             player.displayClientMessage(
                     Component.translatable("message.micrafantasy.skill_locked",
@@ -148,6 +163,10 @@ public class SkillRegistry {
     }
 
     public static ISkill getSkill(JobType jobType, int skillId) {
+        // 共通スキルを優先
+        ISkill common = COMMON_SKILLS.get(skillId);
+        if (common != null) return common;
+        // ジョブ固有スキル
         Map<Integer, ISkill> skills = JOB_SKILLS.get(jobType);
         if (skills == null) return null;
         return skills.get(skillId);

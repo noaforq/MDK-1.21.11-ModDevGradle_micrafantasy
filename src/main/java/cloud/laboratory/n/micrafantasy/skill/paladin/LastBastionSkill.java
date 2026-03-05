@@ -27,7 +27,7 @@ public class LastBastionSkill implements ISkill {
     private static final float MANA_COST       = 0f;
     private static final int   COOLDOWN_TICKS  = 0;   // リミットゲージで管理
     private static final int   CAST_TIME_TICKS = 0;
-    private static final int   UNLOCK_LEVEL    = 50;
+    private static final int   UNLOCK_LEVEL    = 1;
     private static final float DAMAGE          = 40f;
     private static final float RANGE           = 20f;
 

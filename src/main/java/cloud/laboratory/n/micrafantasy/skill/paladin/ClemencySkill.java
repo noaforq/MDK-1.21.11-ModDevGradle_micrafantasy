@@ -22,7 +22,7 @@ public class ClemencySkill implements ISkill {
     private static final float MANA_COST       = 40f;
     private static final int   COOLDOWN_TICKS  = 8 * 20;  // 8秒
     private static final int   CAST_TIME_TICKS = 30;      // 1.5秒
-    private static final int   UNLOCK_LEVEL    = 5;
+    private static final int   UNLOCK_LEVEL    = 1;
     private static final float HEAL            = 10f;
 
     @Override public int getId()            { return 3; }

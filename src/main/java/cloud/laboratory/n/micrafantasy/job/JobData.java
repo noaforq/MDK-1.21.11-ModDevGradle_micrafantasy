@@ -25,8 +25,8 @@ public class JobData {
     // ジョブスキルクールダウン（tick単位、1日=24000tick）
     private int jobSkillCooldown = 0;
 
-    // スキルクールダウン（tick単位）
-    private int[] skillCooldowns = new int[10];
+    // スキルクールダウン（tick単位）スロット0〜9 + 「.」(10) = 11要素
+    private int[] skillCooldowns = new int[11];
 
     // 詠唱状態（-1 = 詠唱なし）
     private int castingSkillId = -1;
@@ -101,41 +101,44 @@ public class JobData {
             experience -= experienceToNextLevel;
             level++;
             experienceToNextLevel = calculateNextLevelExp(level);
-            maxStamina = 100f + (level - 1) * 20f;
-            maxMana    = 100f + (level - 1) * 20f;
-            stamina    = maxStamina;
-            mana       = maxMana;
-            leveled    = true;
+            leveled = true;
         }
         return leveled;
     }
 
     /**
      * 死亡ペナルティ：累計EXPを半減してレベルを再計算する。
-     * レベルを1に戻してから累計EXPを積み上げ直す。
+     * レベルを1に戻してから半減した累計EXPを積み上げ直す。
      */
     public void onDeath() {
+        // ① 累計EXPを半減
         totalExperience = totalExperience / 2;
-        // レベル・EXPを初期化して累計から再計算
+
+        // ② レベル・EXPを初期値にリセットしてから再計算
         level = 1;
-        experience = totalExperience;
         experienceToNextLevel = calculateNextLevelExp(1);
-        maxStamina = 100f;
-        maxMana    = 100f;
-        // 累計EXPを消費してレベルを積み上げ
-        while (experience >= experienceToNextLevel) {
-            experience -= experienceToNextLevel;
+
+        // ③ 半減した累計EXPを消費しながらレベルを積み上げる
+        int remaining = totalExperience;
+        while (remaining >= experienceToNextLevel) {
+            remaining -= experienceToNextLevel;
             level++;
             experienceToNextLevel = calculateNextLevelExp(level);
-            maxStamina = 100f + (level - 1) * 20f;
-            maxMana    = 100f + (level - 1) * 20f;
         }
+
+        // ④ 現レベル内EXP = 積み上げ後の残り
+        experience = remaining;
+
+        // ⑤ ST/MP は固定値のため変更なし。全回復のみ
         stamina = maxStamina;
         mana    = maxMana;
     }
 
     private int calculateNextLevelExp(int level) {
-        return 100 + (level - 1) * 50;
+        // 必要EXP = (現在のレベル * 10) ^ 2
+        // Lv1→2: 100, Lv2→3: 400, Lv3→4: 900, Lv5→6: 2500, Lv10→11: 10000 ...
+        int n = level * 10;
+        return n * n;
     }
 
     public int getCastingSkillId() { return castingSkillId; }
@@ -202,8 +205,10 @@ public class JobData {
         data.jobType = JobType.fromId(tag.getString("jobType").orElse("none"));
         data.level = tag.getInt("level").orElse(1);
         data.experience = tag.getInt("experience").orElse(0);
-        data.totalExperience = tag.getInt("totalExperience").orElse(data.experience); // 旧セーブ互換
-        data.experienceToNextLevel = tag.getInt("experienceToNextLevel").orElse(100);
+        data.totalExperience = tag.getInt("totalExperience").orElse(data.experience);
+        // experienceToNextLevel はセーブ値を優先。なければ現在のlevelから再計算
+        data.experienceToNextLevel = tag.getInt("experienceToNextLevel")
+                .orElseGet(() -> { int n = data.level * 10; return n * n; });
         data.stamina = tag.getFloat("stamina").orElse(100f);
         data.maxStamina = tag.getFloat("maxStamina").orElse(100f);
         data.mana = tag.getFloat("mana").orElse(100f);

@@ -26,7 +26,7 @@ public class SentinelSkill implements ISkill {
     private static final float MANA_COST       = 30f;
     private static final int   COOLDOWN_TICKS  = 120 * 20; // 120秒
     private static final int   CAST_TIME_TICKS = 0;
-    private static final int   UNLOCK_LEVEL    = 38;
+    private static final int   UNLOCK_LEVEL    = 15;
     private static final float RANGE           = 10f;
 
     @Override public int getId()            { return 7; }
