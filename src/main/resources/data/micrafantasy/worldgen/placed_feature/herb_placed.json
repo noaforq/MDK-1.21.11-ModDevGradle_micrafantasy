@@ -1,0 +1,12 @@
+{
+  "feature": "micrafantasy:herb_block",
+  "placement": [
+    {
+      "type": "minecraft:block_predicate_filter",
+      "predicate": {
+        "type": "minecraft:replaceable"
+      }
+    }
+  ]
+}
+

@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "micrafantasy:herb",
+    "minecraft:glass_bottle",
+    "micrafantasy:crystal_shard"
+  ],
+  "result": {
+    "id": "micrafantasy:healing_potion",
+    "count": 1
+  }
+}

@@ -4,11 +4,14 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
+
 public class ModCreativeTabs {
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS =
             DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MicrafantasyMod.MODID);
+
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> MICRAFANTASY_TAB =
             CREATIVE_MODE_TABS.register("micrafantasy_tab", () ->
                     CreativeModeTab.builder()
@@ -16,9 +19,13 @@ public class ModCreativeTabs {
                             .withTabsBefore(CreativeModeTabs.COMBAT)
                             .icon(() -> ModItems.PALADIN_JOB_STONE.get().getDefaultInstance())
                             .displayItems((parameters, output) -> {
-                                output.accept(ModItems.PALADIN_JOB_STONE.get());
-                                output.accept(ModItems.WHITE_MAGE_JOB_STONE.get());
-                                output.accept(ModItems.JOB_CRYSTAL_BLOCK_ITEM.get());
+                                output.accept(new ItemStack(ModItems.PALADIN_JOB_STONE.asItem()));
+                                output.accept(new ItemStack(ModItems.WHITE_MAGE_JOB_STONE.asItem()));
+                                output.accept(new ItemStack(ModItems.JOB_CRYSTAL_BLOCK_ITEM.asItem()));
+                                output.accept(new ItemStack(ModItems.CRYSTAL_ORE_ITEM.asItem()));
+                                output.accept(new ItemStack(ModItems.CRYSTAL_SHARD.asItem()));
+                                output.accept(new ItemStack(ModItems.HERB.asItem()));
+                                output.accept(new ItemStack(ModItems.HEALING_POTION.asItem()));
                             })
                             .build()
             );

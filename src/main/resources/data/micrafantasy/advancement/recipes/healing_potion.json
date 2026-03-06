@@ -1,0 +1,43 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_herb": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "micrafantasy:herb"
+          }
+        ]
+      }
+    },
+    "has_crystal_shard": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "micrafantasy:crystal_shard"
+          }
+        ]
+      }
+    },
+    "has_glass_bottle": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:glass_bottle"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    ["has_herb", "has_crystal_shard", "has_glass_bottle"]
+  ],
+  "rewards": {
+    "recipes": [
+      "micrafantasy:healing_potion"
+    ]
+  }
+}

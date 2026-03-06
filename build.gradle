@@ -176,6 +176,21 @@ tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
 }
 
+// テクスチャ生成タスク
+task compileGenTextures(type: Exec) {
+    def scriptsDir = file("${projectDir}/scripts")
+    commandLine 'C:/Program Files/Microsoft/jdk-21.0.9.10-hotspot/bin/javac.exe',
+                '-d', scriptsDir.absolutePath,
+                "${scriptsDir}/GenTextures.java"
+}
+
+task genTextures(type: JavaExec, dependsOn: compileGenTextures) {
+    def scriptsDir = file("${projectDir}/scripts")
+    classpath      = files(scriptsDir)
+    mainClass      = 'GenTextures'
+    javaLauncher   = javaToolchains.launcherFor { languageVersion = JavaLanguageVersion.of(21) }
+}
+
 // IDEA no longer automatically downloads sources/javadoc jars for dependencies, so we need to explicitly enable the behavior.
 idea {
     module {
