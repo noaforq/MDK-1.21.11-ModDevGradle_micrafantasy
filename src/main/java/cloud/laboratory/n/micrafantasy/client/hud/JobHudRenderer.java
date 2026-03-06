@@ -162,9 +162,20 @@ public class JobHudRenderer {
     private static void renderSkillSlots(GuiGraphics g, Minecraft mc, JobData data, int startX, int y) {
         int playerLevel = data.getLevel();
 
+        // マウス座標を取得
+        double mouseX = mc.mouseHandler.xpos() * mc.getWindow().getGuiScaledWidth()  / mc.getWindow().getScreenWidth();
+        double mouseY = mc.mouseHandler.ypos() * mc.getWindow().getGuiScaledHeight() / mc.getWindow().getScreenHeight();
+
+        int hoveredSlot = -1; // ホバー中のスロットID
+
         for (int drawIndex = 0; drawIndex < SLOT_ORDER.length; drawIndex++) {
             int slotId = SLOT_ORDER[drawIndex];
             int x = startX + drawIndex * (SLOT_SIZE + SLOT_GAP);
+
+            // ホバー判定
+            if (mouseX >= x && mouseX < x + SLOT_SIZE && mouseY >= y && mouseY < y + SLOT_SIZE) {
+                hoveredSlot = slotId;
+            }
 
             ISkill skill = SkillRegistry.getSkill(data.getJobType(), slotId);
 
@@ -268,6 +279,35 @@ public class JobHudRenderer {
                     y + SLOT_SIZE - klH,
                     FONT_SCALE_KEY,
                     locked ? 0xFF555555 : 0xFFCCCCCC, false);
+        }
+
+        // ホバー中スロットのスキル名をスロット上部に表示
+        if (hoveredSlot >= 0) {
+            ISkill hoveredSkill = SkillRegistry.getSkill(data.getJobType(), hoveredSlot);
+            if (hoveredSkill != null) {
+                String skillName = hoveredSkill.getName();
+                // ホバー中スロットのX座標を再計算
+                int hoveredDrawIndex = -1;
+                for (int i = 0; i < SLOT_ORDER.length; i++) {
+                    if (SLOT_ORDER[i] == hoveredSlot) { hoveredDrawIndex = i; break; }
+                }
+                if (hoveredDrawIndex >= 0) {
+                    int hx = startX + hoveredDrawIndex * (SLOT_SIZE + SLOT_GAP);
+                    float nameScale = FONT_SCALE_SMALL;
+                    float namePx = mc.font.width(skillName) * nameScale;
+                    // スロット中央に合わせ、スロット上方に表示
+                    float nameX = hx + (SLOT_SIZE - namePx) / 2f;
+                    float nameY = y - mc.font.lineHeight * nameScale - 2;
+                    // 半透明背景
+                    int padX = 2, padY = 1;
+                    g.fill(
+                        (int)(nameX - padX), (int)(nameY - padY),
+                        (int)(nameX + namePx + padX), (int)(nameY + mc.font.lineHeight * nameScale + padY),
+                        0xCC000000
+                    );
+                    drawStringScaled(g, mc, skillName, nameX, nameY, nameScale, 0xFFFFFFFF, false);
+                }
+            }
         }
     }
 
