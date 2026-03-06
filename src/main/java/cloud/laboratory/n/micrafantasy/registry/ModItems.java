@@ -3,6 +3,7 @@ import cloud.laboratory.n.micrafantasy.MicrafantasyMod;
 import cloud.laboratory.n.micrafantasy.item.CrystalShardItem;
 import cloud.laboratory.n.micrafantasy.item.HealingPotionItem;
 import cloud.laboratory.n.micrafantasy.item.PaladinJobStone;
+import cloud.laboratory.n.micrafantasy.item.WhiteMageJobStone;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.registries.DeferredItem;

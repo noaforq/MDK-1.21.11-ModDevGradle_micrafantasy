@@ -25,6 +25,7 @@ public class JobHudRenderer {
     private static final int SLOT_SIZE   = 11;
     private static final int ICON_SIZE   = 9;
     private static final int SLOT_GAP    = 0;   // 負値=スロット同士を重ねる
+    private static final int ICON_OFFSET    = (SLOT_SIZE - ICON_SIZE) / 2;  // 1
     private static final int TOTAL_SLOTS = 11;
     private static final int TOTAL_WIDTH = TOTAL_SLOTS * (SLOT_SIZE + SLOT_GAP) - SLOT_GAP;
 
@@ -187,17 +188,6 @@ public class JobHudRenderer {
 
             boolean locked = playerLevel < skill.getUnlockLevel();
 
-            // アイコン（64×64テクスチャをSLOT_SIZE×SLOT_SIZEに縮小して中央表示）
-            float iconScale = (float) SLOT_SIZE / 64f;
-            var pose = g.pose();
-            pose.pushMatrix();
-            pose.translate(x, y);
-            pose.scale(iconScale, iconScale);
-            g.blit(RenderPipelines.GUI_TEXTURED, SKILL_ICONS[slotId],
-                   0, 0,
-                   0, 0, 64, 64, 64, 64,
-                   locked ? 0x44FFFFFF : 0xFFFFFFFF);
-            pose.popMatrix();
             // アイコン
             Identifier icon = getSkillIcon(data.getJobType(), slotId);
             if (icon != null) {

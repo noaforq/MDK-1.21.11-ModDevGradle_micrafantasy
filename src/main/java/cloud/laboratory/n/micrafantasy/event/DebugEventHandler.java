@@ -49,10 +49,12 @@ public class DebugEventHandler {
     private static void applyDebug(ServerPlayer player) {
         int targetLevel = Math.max(1, MicrafantasyConfig.getDebugJobLevel());
         giveItemIfNotHeld(player, new ItemStack(ModItems.PALADIN_JOB_STONE.get()));
+        giveItemIfNotHeld(player, new ItemStack(ModItems.WHITE_MAGE_JOB_STONE.get()));
         giveStack(player, new ItemStack(ModItems.HERB.get(), 16));
         giveStack(player, new ItemStack(ModItems.CRYSTAL_SHARD.get(), 16));
         giveStack(player, new ItemStack(Items.GLASS_BOTTLE, 16));
         if (player.level() instanceof ServerLevel serverLevel) {
+            // crystal_ore を足元 1ブロック下に 3×3 設置
             BlockPos oreBase = player.blockPosition().below();
             for (int dx = -1; dx <= 1; dx++) {
                 for (int dz = -1; dz <= 1; dz++) {
@@ -60,6 +62,14 @@ public class DebugEventHandler {
                 }
             }
             MicrafantasyMod.LOGGER.info("[Debug] Placed crystal_ore blocks around {} at {}", player.getName().getString(), oreBase);
+            // job_crystal_block を足元 2ブロック上（地上）に 3×3 設置
+            BlockPos crystalBase = player.blockPosition().above(2);
+            for (int dx = -1; dx <= 1; dx++) {
+                for (int dz = -1; dz <= 1; dz++) {
+                    serverLevel.setBlock(crystalBase.offset(dx, 0, dz), ModBlocks.JOB_CRYSTAL_BLOCK.get().defaultBlockState(), 3);
+                }
+            }
+            MicrafantasyMod.LOGGER.info("[Debug] Placed job_crystal_block around {} at {}", player.getName().getString(), crystalBase);
         }
         JobData data = player.getData(ModAttachmentTypes.JOB_DATA.get());
         if (data.getJobType() != JobType.NONE) {
