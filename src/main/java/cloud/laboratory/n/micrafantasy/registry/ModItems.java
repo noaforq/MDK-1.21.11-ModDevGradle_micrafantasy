@@ -1,6 +1,7 @@
 package cloud.laboratory.n.micrafantasy.registry;
 import cloud.laboratory.n.micrafantasy.MicrafantasyMod;
 import cloud.laboratory.n.micrafantasy.item.PaladinJobStone;
+import cloud.laboratory.n.micrafantasy.item.WhiteMageJobStone;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -13,6 +14,13 @@ public class ModItems {
             ITEMS.registerItem(
                     "paladin_job_stone",
                     PaladinJobStone::new,
+                    () -> new Item.Properties().stacksTo(1)
+            );
+    // 白魔道士のジョブストーン
+    public static final DeferredItem<WhiteMageJobStone> WHITE_MAGE_JOB_STONE =
+            ITEMS.registerItem(
+                    "white_mage_job_stone",
+                    WhiteMageJobStone::new,
                     () -> new Item.Properties().stacksTo(1)
             );
     // クリスタルブロックのブロックアイテム

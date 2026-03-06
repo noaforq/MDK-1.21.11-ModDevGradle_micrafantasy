@@ -5,6 +5,7 @@ import cloud.laboratory.n.micrafantasy.network.ModNetwork;
 import cloud.laboratory.n.micrafantasy.network.packet.SyncJobDataPayload;
 import cloud.laboratory.n.micrafantasy.registry.ModAttachmentTypes;
 import cloud.laboratory.n.micrafantasy.skill.paladin.*;
+import cloud.laboratory.n.micrafantasy.skill.whitemage.*;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import java.util.HashMap;
@@ -33,6 +34,19 @@ public class SkillRegistry {
         paladinSkills.put(8, new InvincibleSkill());     // インビンシブル
         paladinSkills.put(9, new LastBastionSkill());    // ラスト・バスティオン（LB）
         JOB_SKILLS.put(JobType.PALADIN, paladinSkills);
+
+        // ── 白魔道士固有スキル ──
+        Map<Integer, ISkill> whiteMageSkills = new HashMap<>();
+        whiteMageSkills.put(1, new StoneSkill());           // ストーン
+        whiteMageSkills.put(2, new CureSkill());            // ケアル
+        whiteMageSkills.put(3, new AeroSkill());            // エアロ
+        whiteMageSkills.put(4, new StonraSkill());          // ストンラ
+        whiteMageSkills.put(5, new CuraSkill());            // ケアルラ
+        whiteMageSkills.put(6, new HolySkill());            // ホーリー
+        whiteMageSkills.put(7, new TetragrammatonSkill());  // テトラグラマトン
+        whiteMageSkills.put(8, new BenedictionSkill());     // ベネディクション
+        whiteMageSkills.put(9, new AsylumSkill());          // アサイラム（LB）
+        JOB_SKILLS.put(JobType.WHITE_MAGE, whiteMageSkills);
     }
 
     /**

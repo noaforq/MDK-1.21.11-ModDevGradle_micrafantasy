@@ -22,18 +22,18 @@ CYAN   = ( 40, 200, 200, 255)
 WHITE  = (220, 220, 220, 255)
 
 SKILLS = [
-    # (output_name,              source_path,                                   border_color)
-    ("skill_0_normal_attack",   os.path.join(BASE, "FFXIVIcons JobIcons", "00_ROLE", "DPSRole.png"), GOLD),
-    ("skill_1_provoke",         os.path.join(TANK, "provoke.png"),              GOLD),
-    ("skill_2_shield_bash",     os.path.join(PLD,  "shield_bash.png"),          GOLD),
-    ("skill_3_clemency",        os.path.join(PLD,  "clemency.png"),             BLUE),
-    ("skill_4_fast_blade",      os.path.join(PLD,  "fast_blade.png"),           GOLD),
-    ("skill_5_riot_sword",      os.path.join(PLD,  "riot_blade.png"),           GOLD),
-    ("skill_6_rage_of_halone",  os.path.join(PLD,  "rage_of_halone.png"),       GOLD),
-    ("skill_7_sentinel",        os.path.join(PLD,  "sentinel.png"),             BLUE),
-    ("skill_8_invincible",      os.path.join(PLD,  "hallowed_ground.png"),      PURPLE),
-    ("skill_9_last_bastion",    os.path.join(BASE, "FFXIVIcons MainCommand (Others)", "02_General", "limit_break.png"), ORANGE),
-    ("skill_10_normal_defense", os.path.join(BASE, "FFXIVIcons JobIcons", "00_ROLE", "TankRole.png"), CYAN),
+    # (output_name,                     source_path,                                   border_color)
+    ("skill_common_0_normal_attack",   os.path.join(BASE, "FFXIVIcons JobIcons", "00_ROLE", "DPSRole.png"), GOLD),
+    ("skill_pld_1_provoke",            os.path.join(TANK, "provoke.png"),              GOLD),
+    ("skill_pld_2_shield_bash",        os.path.join(PLD,  "shield_bash.png"),          GOLD),
+    ("skill_pld_3_clemency",           os.path.join(PLD,  "clemency.png"),             BLUE),
+    ("skill_pld_4_fast_blade",         os.path.join(PLD,  "fast_blade.png"),           GOLD),
+    ("skill_pld_5_riot_sword",         os.path.join(PLD,  "riot_blade.png"),           GOLD),
+    ("skill_pld_6_rage_of_halone",     os.path.join(PLD,  "rage_of_halone.png"),       GOLD),
+    ("skill_pld_7_sentinel",           os.path.join(PLD,  "sentinel.png"),             BLUE),
+    ("skill_pld_8_invincible",         os.path.join(PLD,  "hallowed_ground.png"),      PURPLE),
+    ("skill_pld_9_last_bastion",       os.path.join(BASE, "FFXIVIcons MainCommand (Others)", "02_General", "limit_break.png"), ORANGE),
+    ("skill_common_10_normal_defense", os.path.join(BASE, "FFXIVIcons JobIcons", "00_ROLE", "TankRole.png"), CYAN),
 ]
 
 def make_icon(src_path, dst_path, border_color):
@@ -95,4 +95,3 @@ for name, src, col in JOB_STONES:
         continue
     make_icon(src, dst, col)
 print("=== 完了 ===")
-

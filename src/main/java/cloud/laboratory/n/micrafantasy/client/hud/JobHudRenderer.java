@@ -15,6 +15,9 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RenderGuiEvent;
 
+import java.util.EnumMap;
+import java.util.Map;
+
 @EventBusSubscriber(modid = MicrafantasyMod.MODID, value = Dist.CLIENT)
 public class JobHudRenderer {
 
@@ -62,20 +65,50 @@ public class JobHudRenderer {
     private static final int COL_LOCKED_OVERLAY = 0xCC000000;
     private static final int COL_LOCKED_BORDER  = 0xFF443333;
 
-    // ---- スキルアイコン ----
-    private static final Identifier[] SKILL_ICONS = {
-        Identifier.fromNamespaceAndPath(MicrafantasyMod.MODID, "textures/gui/skill_0_normal_attack.png"),
-        Identifier.fromNamespaceAndPath(MicrafantasyMod.MODID, "textures/gui/skill_1_provoke.png"),
-        Identifier.fromNamespaceAndPath(MicrafantasyMod.MODID, "textures/gui/skill_2_shield_bash.png"),
-        Identifier.fromNamespaceAndPath(MicrafantasyMod.MODID, "textures/gui/skill_3_clemency.png"),
-        Identifier.fromNamespaceAndPath(MicrafantasyMod.MODID, "textures/gui/skill_4_fast_blade.png"),
-        Identifier.fromNamespaceAndPath(MicrafantasyMod.MODID, "textures/gui/skill_5_riot_sword.png"),
-        Identifier.fromNamespaceAndPath(MicrafantasyMod.MODID, "textures/gui/skill_6_rage_of_halone.png"),
-        Identifier.fromNamespaceAndPath(MicrafantasyMod.MODID, "textures/gui/skill_7_sentinel.png"),
-        Identifier.fromNamespaceAndPath(MicrafantasyMod.MODID, "textures/gui/skill_8_invincible.png"),
-        Identifier.fromNamespaceAndPath(MicrafantasyMod.MODID, "textures/gui/skill_9_last_bastion.png"),
-        Identifier.fromNamespaceAndPath(MicrafantasyMod.MODID, "textures/gui/skill_10_normal_defense.png"),
-    };
+    // ---- スキルアイコン（共通スロット 0, 10） ----
+    private static final Identifier ICON_NORMAL_ATTACK  =
+            Identifier.fromNamespaceAndPath(MicrafantasyMod.MODID, "textures/gui/skill_common_0_normal_attack.png");
+    private static final Identifier ICON_NORMAL_DEFENSE =
+            Identifier.fromNamespaceAndPath(MicrafantasyMod.MODID, "textures/gui/skill_common_10_normal_defense.png");
+
+    // ---- ジョブ別スキルアイコン（スロット 1〜9） ----
+    private static final Map<JobType, Identifier[]> JOB_SKILL_ICONS = new EnumMap<>(JobType.class);
+    static {
+        JOB_SKILL_ICONS.put(JobType.PALADIN, new Identifier[] {
+            null, // 0: 共通
+            Identifier.fromNamespaceAndPath(MicrafantasyMod.MODID, "textures/gui/skill_pld_1_provoke.png"),
+            Identifier.fromNamespaceAndPath(MicrafantasyMod.MODID, "textures/gui/skill_pld_2_shield_bash.png"),
+            Identifier.fromNamespaceAndPath(MicrafantasyMod.MODID, "textures/gui/skill_pld_3_clemency.png"),
+            Identifier.fromNamespaceAndPath(MicrafantasyMod.MODID, "textures/gui/skill_pld_4_fast_blade.png"),
+            Identifier.fromNamespaceAndPath(MicrafantasyMod.MODID, "textures/gui/skill_pld_5_riot_sword.png"),
+            Identifier.fromNamespaceAndPath(MicrafantasyMod.MODID, "textures/gui/skill_pld_6_rage_of_halone.png"),
+            Identifier.fromNamespaceAndPath(MicrafantasyMod.MODID, "textures/gui/skill_pld_7_sentinel.png"),
+            Identifier.fromNamespaceAndPath(MicrafantasyMod.MODID, "textures/gui/skill_pld_8_invincible.png"),
+            Identifier.fromNamespaceAndPath(MicrafantasyMod.MODID, "textures/gui/skill_pld_9_last_bastion.png"),
+            null, // 10: 共通
+        });
+        JOB_SKILL_ICONS.put(JobType.WHITE_MAGE, new Identifier[] {
+            null, // 0: 共通
+            Identifier.fromNamespaceAndPath(MicrafantasyMod.MODID, "textures/gui/skill_whm_1_stone.png"),
+            Identifier.fromNamespaceAndPath(MicrafantasyMod.MODID, "textures/gui/skill_whm_2_cure.png"),
+            Identifier.fromNamespaceAndPath(MicrafantasyMod.MODID, "textures/gui/skill_whm_3_aero.png"),
+            Identifier.fromNamespaceAndPath(MicrafantasyMod.MODID, "textures/gui/skill_whm_4_stonra.png"),
+            Identifier.fromNamespaceAndPath(MicrafantasyMod.MODID, "textures/gui/skill_whm_5_cura.png"),
+            Identifier.fromNamespaceAndPath(MicrafantasyMod.MODID, "textures/gui/skill_whm_6_holy.png"),
+            Identifier.fromNamespaceAndPath(MicrafantasyMod.MODID, "textures/gui/skill_whm_7_tetragrammaton.png"),
+            Identifier.fromNamespaceAndPath(MicrafantasyMod.MODID, "textures/gui/skill_whm_8_benediction.png"),
+            Identifier.fromNamespaceAndPath(MicrafantasyMod.MODID, "textures/gui/skill_whm_9_asylum.png"),
+            null, // 10: 共通
+        });
+    }
+
+    private static Identifier getSkillIcon(JobType jobType, int slotId) {
+        if (slotId == 0)  return ICON_NORMAL_ATTACK;
+        if (slotId == 10) return ICON_NORMAL_DEFENSE;
+        Identifier[] icons = JOB_SKILL_ICONS.get(jobType);
+        if (icons == null || slotId >= icons.length) return null;
+        return icons[slotId];
+    }
 
     // 表示順: 0, .(=10), 1〜9
     private static final int[] SLOT_ORDER = { 0, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
@@ -129,9 +162,20 @@ public class JobHudRenderer {
     private static void renderSkillSlots(GuiGraphics g, Minecraft mc, JobData data, int startX, int y) {
         int playerLevel = data.getLevel();
 
+        // マウス座標を取得
+        double mouseX = mc.mouseHandler.xpos() * mc.getWindow().getGuiScaledWidth()  / mc.getWindow().getScreenWidth();
+        double mouseY = mc.mouseHandler.ypos() * mc.getWindow().getGuiScaledHeight() / mc.getWindow().getScreenHeight();
+
+        int hoveredSlot = -1; // ホバー中のスロットID
+
         for (int drawIndex = 0; drawIndex < SLOT_ORDER.length; drawIndex++) {
             int slotId = SLOT_ORDER[drawIndex];
             int x = startX + drawIndex * (SLOT_SIZE + SLOT_GAP);
+
+            // ホバー判定
+            if (mouseX >= x && mouseX < x + SLOT_SIZE && mouseY >= y && mouseY < y + SLOT_SIZE) {
+                hoveredSlot = slotId;
+            }
 
             ISkill skill = SkillRegistry.getSkill(data.getJobType(), slotId);
 
@@ -145,10 +189,13 @@ public class JobHudRenderer {
             boolean locked = playerLevel < skill.getUnlockLevel();
 
             // アイコン
-            g.blit(RenderPipelines.GUI_TEXTURED, SKILL_ICONS[slotId],
-                   x + ICON_OFFSET, y + ICON_OFFSET,
-                   0, 0, ICON_SIZE, ICON_SIZE, ICON_SIZE, ICON_SIZE,
-                   locked ? 0x44FFFFFF : 0xFFFFFFFF);
+            Identifier icon = getSkillIcon(data.getJobType(), slotId);
+            if (icon != null) {
+                g.blit(RenderPipelines.GUI_TEXTURED, icon,
+                       x + ICON_OFFSET, y + ICON_OFFSET,
+                       0, 0, ICON_SIZE, ICON_SIZE, ICON_SIZE, ICON_SIZE,
+                       locked ? 0x44FFFFFF : 0xFFFFFFFF);
+            }
 
             // 枠
             g.renderOutline(x, y, SLOT_SIZE, SLOT_SIZE,
@@ -233,14 +280,46 @@ public class JobHudRenderer {
                     FONT_SCALE_KEY,
                     locked ? 0xFF555555 : 0xFFCCCCCC, false);
         }
+
+        // ホバー中スロットのスキル名をスロット上部に表示
+        if (hoveredSlot >= 0) {
+            ISkill hoveredSkill = SkillRegistry.getSkill(data.getJobType(), hoveredSlot);
+            if (hoveredSkill != null) {
+                String skillName = hoveredSkill.getName();
+                // ホバー中スロットのX座標を再計算
+                int hoveredDrawIndex = -1;
+                for (int i = 0; i < SLOT_ORDER.length; i++) {
+                    if (SLOT_ORDER[i] == hoveredSlot) { hoveredDrawIndex = i; break; }
+                }
+                if (hoveredDrawIndex >= 0) {
+                    int hx = startX + hoveredDrawIndex * (SLOT_SIZE + SLOT_GAP);
+                    float nameScale = FONT_SCALE_SMALL;
+                    float namePx = mc.font.width(skillName) * nameScale;
+                    // スロット中央に合わせ、スロット上方に表示
+                    float nameX = hx + (SLOT_SIZE - namePx) / 2f;
+                    float nameY = y - mc.font.lineHeight * nameScale - 2;
+                    // 半透明背景
+                    int padX = 2, padY = 1;
+                    g.fill(
+                        (int)(nameX - padX), (int)(nameY - padY),
+                        (int)(nameX + namePx + padX), (int)(nameY + mc.font.lineHeight * nameScale + padY),
+                        0xCC000000
+                    );
+                    drawStringScaled(g, mc, skillName, nameX, nameY, nameScale, 0xFFFFFFFF, false);
+                }
+            }
+        }
     }
 
     // ================================================================
     // ジョブ名 + EXバー（上段）
     // ================================================================
     private static void renderJobInfo(GuiGraphics g, Minecraft mc, JobData data, int x, int y) {
-        String jobName = data.getJobType().name().charAt(0)
-                + data.getJobType().name().substring(1).toLowerCase();
+        // "paladin" -> "Paladin", "white_mage" -> "White Mage"
+        String rawId = data.getJobType().getId();
+        String jobName = java.util.Arrays.stream(rawId.split("_"))
+                .map(w -> w.isEmpty() ? w : Character.toUpperCase(w.charAt(0)) + w.substring(1))
+                .collect(java.util.stream.Collectors.joining(" "));
         String lvStr = " Lv." + data.getLevel();
 
         drawStringScaled(g, mc, jobName, x, y, FONT_SCALE_JOB, COL_JOB_NAME, true);

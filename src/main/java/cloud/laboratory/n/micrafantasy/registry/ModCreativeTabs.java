@@ -17,6 +17,7 @@ public class ModCreativeTabs {
                             .icon(() -> ModItems.PALADIN_JOB_STONE.get().getDefaultInstance())
                             .displayItems((parameters, output) -> {
                                 output.accept(ModItems.PALADIN_JOB_STONE.get());
+                                output.accept(ModItems.WHITE_MAGE_JOB_STONE.get());
                                 output.accept(ModItems.JOB_CRYSTAL_BLOCK_ITEM.get());
                             })
                             .build()
