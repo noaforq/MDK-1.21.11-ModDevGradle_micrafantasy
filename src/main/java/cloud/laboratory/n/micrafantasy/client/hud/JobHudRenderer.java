@@ -24,8 +24,8 @@ public class JobHudRenderer {
     // ---- スロット ----
     private static final int SLOT_SIZE   = 11;
     private static final int ICON_SIZE   = 9;
-    private static final int ICON_OFFSET = (SLOT_SIZE - ICON_SIZE) / 2;
     private static final int SLOT_GAP    = 0;   // 負値=スロット同士を重ねる
+    private static final int ICON_OFFSET    = (SLOT_SIZE - ICON_SIZE) / 2;  // 1
     private static final int TOTAL_SLOTS = 11;
     private static final int TOTAL_WIDTH = TOTAL_SLOTS * (SLOT_SIZE + SLOT_GAP) - SLOT_GAP;
 

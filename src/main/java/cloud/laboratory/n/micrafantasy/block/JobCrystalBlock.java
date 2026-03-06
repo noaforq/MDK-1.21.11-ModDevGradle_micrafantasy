@@ -47,9 +47,9 @@ public class JobCrystalBlock extends Block {
         // ② GLOW（強い発光点）: ブロック表面付近で輝く
         int glowCount = 6 + random.nextInt(4); // 6〜9個
         for (int i = 0; i < glowCount; i++) {
-            double ox = (random.nextDouble() - 0.5) * 1.0;
-            double oy = (random.nextDouble() - 0.5) * 1.0;
-            double oz = (random.nextDouble() - 0.5) * 1.0;
+            double ox = (random.nextDouble() - 0.5);
+            double oy = (random.nextDouble() - 0.5);
+            double oz = (random.nextDouble() - 0.5);
             level.addParticle(ParticleTypes.GLOW,
                     bx + ox, by + oy, bz + oz,
                     0.0, 0.0, 0.0);
@@ -94,7 +94,10 @@ public class JobCrystalBlock extends Block {
         super.playerDestroy(level, player, pos, state, blockEntity, tool);
 
         if (!level.isClientSide()) {
-            Block.popResource(level, pos, new ItemStack(ModItems.PALADIN_JOB_STONE.get()));
+            Block.popResource(level, pos, new ItemStack(ModItems.PALADIN_JOB_STONE.asItem()));
+            // クリスタルの欠片を1〜3個ドロップ
+            int shardCount = 1 + level.getRandom().nextInt(3);
+            Block.popResource(level, pos, new ItemStack(ModItems.CRYSTAL_SHARD.asItem(), shardCount));
         }
     }
 }
